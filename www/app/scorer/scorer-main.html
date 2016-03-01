@@ -1,0 +1,172 @@
+﻿<ion-view ng-controller="scoringController as sc">
+    <ion-header-bar class="bar-positive bar-header">
+        <h1 class="title">{{innings.battingTeamId}} {{innings.totalScore}}/{{innings.fallenWkts}} ({{overNum}}.{{overBallNum}})</h1>
+    </ion-header-bar>
+    <ion-content>
+
+        <script id="select-player.html" type="text/ng-template">
+            <div class="modal">
+                <ion-header-bar>
+                    <h1 class="title">Choose Player</h1>
+                </ion-header-bar>
+                <ion-content>
+                    <ion-list>
+                        <ion-item ng-repeat="aPlayer in getPlayerList(modal.playerType)" ng-click="closeModal(aPlayer)">
+                            {{aPlayer.playerName}}
+                        </ion-item>
+                    </ion-list>
+                </ion-content>
+            </div>
+        </script>
+
+        <br />
+        <br />
+        <div id="batsman">
+            <div class="row" ng-if="batsman1.playerName==null">
+                <a class="button" ng-click="openModal('batsman1')" ng-show="batsman1.playerName == null">Set batsman</a>
+            </div>
+            <div ng-hide="batsman1.playerName  == null">
+                <div class="row">
+                    <div class="col col-33 " id="batsman1">
+                        {{batsman1.playerName}}
+                        <span ng-if="batsman1===onStrike">*</span>
+                    </div>
+                    <div class="col col-offset-10 ">
+                        <div class="col"> {{batsman1.runs}}({{batsman1.ballsFaced}})</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-if="batsman2.playerName==null">
+                <a class="button" ng-click="openModal('batsman2')" ng-show="batsman2.playerName == null">Set batsman</a>
+            </div>
+            <div ng-hide="batsman2.playerName  == null">
+                <div class="row">
+                    <div class="col col-33 " id="batsman2">
+                        {{batsman2.playerName}}
+                        <span ng-if="batsman2===onStrike">*</span>
+                    </div>
+                    <div class="col col-offset-10 ">
+                        <div class="col">{{batsman2.runs}}({{batsman2.ballsFaced}})</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bowler">
+            <div class="row" ng-if="bowler.playerName==null">
+                <a class="button" ng-click="openModal('bowler')" ng-show="bowler.playerName == null">Set Bowler</a>
+            </div>
+            <div ng-hide="bowler.playerName  == null">
+                <div class="row">
+                    <div class="col col-33 " id="bowler">{{bowler.playerName}}</div>
+                    <div class="col col-offset-10 ">
+                        <div class="col">{{bowler.runsConceded}}({{bowler.oversBowled}}.{{overBallNum}})</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div>
+            <div class="row">
+                <div class="col col-50">
+                    Extras
+                </div>
+                <div class="col col-50">
+                    Partnership
+                </div>
+            </div>
+        </div>
+            -->
+        <div>
+           This over:{{thisOver}}
+        </div>
+        <div>
+            FOW:{{fow}}
+        </div>
+        <div id="scorer-input">
+
+            <div class="row">
+                <div class="col button " ng-click="setRuns(runButtons[0].runs)" ng-class="{'button-calm': runButtons[0].runs == runs }"> {{runButtons[0].runs}}</div>
+                <div class="col button" ng-click="setRuns(runButtons[1].runs)" ng-class="{'button-calm': runButtons[1].runs == runs }"> {{runButtons[1].runs}}</div>
+                <div class="col button" ng-click="setRuns(runButtons[2].runs)" ng-class="{'button-calm': runButtons[2].runs == runs }"> {{runButtons[2].runs}}</div>
+                <div class="col button" ng-click="setRuns(runButtons[3].runs)" ng-class="{'button-calm': runButtons[3].runs == runs }"> {{runButtons[3].runs}}</div>
+            </div>
+            <div class="row">
+                <div class="col button" ng-click="setRuns(runButtons[4].runs)" ng-class="{'button-calm': runButtons[4].runs == runs }"> {{runButtons[4].runs}}</div>
+                <div class="col button" ng-click="setRuns(runButtons[5].runs)" ng-class="{'button-calm': runButtons[5].runs == runs }"> {{runButtons[5].runs}}</div>
+                <div class="col button" ng-click="setRuns(runButtons[6].runs)" ng-class="{'button-calm': runButtons[6].runs == runs }"> {{runButtons[6].runs}}</div>
+                <div class="col button" ng-model="wkt" ng-click="openOutModal()"> OUT</div>
+            </div>
+
+            <div class="row">
+                <label class="item item-input item-select col col-50">
+                    <div class="input-label">
+                        Ball Type
+                    </div>
+                    <select ng-model="extraType">
+                        <option selected>None</option>
+                        <option>No Ball</option>
+                        <option>Wide</option>
+                    </select>
+                </label>
+                <label class="item item-input item-select col col-50">
+                    <div class="input-label">
+                        Runs Off
+                    </div>
+                    <select ng-model="runsBy">
+                        <option selected>Bat</option>
+                        <option>Leg Bye</option>
+                        <option>Bye</option>
+                    </select>
+                </label>
+            </div>
+            <div class="row">
+                <a href="" class="button button-assertive">Back</a>
+                <a href="" class="button button-positive" ng-click="submitBall(extraType,runsBy)">Submit</a>
+            </div>
+        </div>
+        <script id="select-out-method.html" type="text/ng-template">
+            <div class="modal">
+                <ion-header-bar>
+                    <h1 class="title">
+                        <label class="item item-input item-select">
+                            <div class="input-label">
+                                Out
+                            </div>
+                            <select ng-model="outPlayer">
+                                <option ng-click="setStrikerOnly('')">{{onStrike.playerName}}</option>
+                                <option ng-click="setStrikerOnly(true)">{{getNonStriker().playerName}}</option>
+                            </select>
+                        </label>
+                    </h1>
+                </ion-header-bar>
+                <ion-content>
+                    <div class="list">
+                        <label class="item item-input item-select">
+                            <div class="input-label">
+                                How
+                            </div>
+                            <select ng-model="selectedOutType">
+                                <option ng-repeat="ot in outTypes|filter:{strikerOnly:isStrikerOnly}">{{ot.how}}</option>
+                            </select>
+                        </label>
+                    </div>
+                    <label class="item item-input item-select" ng-if="isOutByFielder(selectedOutType)">
+                        <div id=" fielder " class="input-label ">
+                            By
+                        </div>
+                        <select ng-model="selectedFielder">
+                            <option  ng-repeat="p in  getPlayerList('fielder')">{{p.playerName}}</option>
+                        </select>
+                    </label>
+                    <label class="item " ng-if="isOutByBowler(selectedOutType)">
+                        Bowler: {{bowler.playerName}}
+                    </label>
+                    {{isStrikerOnly}}
+                    <div>
+                        <a class="button button-assertive" ng-click="cancelOut()"> Cancel </a>
+                        <a class="button button-positive" ng-click="confirmOut(outPlayer,selectedOutType,selectedFielder)"> Submit</a>
+                    </div>
+                </ion-content>
+            </div>
+        </script>
+    </ion-content>
+</ion-view>

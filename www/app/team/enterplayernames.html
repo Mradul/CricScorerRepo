@@ -1,0 +1,43 @@
+﻿
+<ion-view ng-controller="EnterPlayersCtrl as ep">
+    <ion-header-bar class="bar bar-balanced">
+        <h1 class="title">Enter Players for {{teamName}}</h1>
+    </ion-header-bar>
+    <ion-content>
+        <ion-list 
+                  show-delete="shouldShowDelete"
+                  can-swipe="listCanSwipe">
+
+            <div ng-repeat="player in players" class="list list-inset">
+
+
+                <label class="item item-input">
+                    {{$index+1}} <input type="text" class="item-input item-input-wrapper item-placeholder item-right-edit"
+                                        placeholder="Player name" ng-model="player.name">
+                </label>
+
+
+                <!--  <ion-option-button class="button-positive"
+                                     ng-click="share(player)">
+                      Share
+                  </ion-option-button>
+                  <ion-option-button class="button-info"
+                                     ng-click="edit(player)">
+                      Edit
+                  </ion-option-button>
+                  <ion-delete-button class="ion-minus-circled"
+                                     ng-click="items.splice($index, 1)">
+                  </ion-delete-button>
+                -->
+
+            </div>
+         
+            <button class="button button-large button-positive" ng-click="ep.addPlayers()">
+                Save Players
+            </button>
+            <button class="button button-large button-assertive">
+                Cancel
+            </button>
+        </ion-list>
+    </ion-content>
+</ion-view>
